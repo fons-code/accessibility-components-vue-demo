@@ -11,50 +11,33 @@
 <script setup>
 import { ref } from 'vue'
 import SkipLink from './components/SkipLink.vue'
-import AccordionAccessible from './components/AccordionAccessible.vue'
-import TooltipAccessible from './components/TooltipAccessible.vue'
-import PaginationAccessible from './components/PaginationAccessible.vue'
-import ModalAccessible from './components/ModalAccessible.vue'
-import FocusManagement from './components/FocusManagement.vue'
-import MapAccessible from './components/MapAccessible.vue'
-import DynamicWorkflows from './components/DynamicWorkflows.vue'
 
-const mainContent = ref(null)
-const appContainer = ref(null)
 const isMobileMenuOpen = ref(false)
-
-// Manejar el estado de aria-hidden cuando el modal se abre/cierra
-function handleModalOpened() {
-  if (appContainer.value) {
-    appContainer.value.setAttribute('aria-hidden', 'true')
-  }
-}
-
-function handleModalClosed() {
-  if (appContainer.value) {
-    appContainer.value.removeAttribute('aria-hidden')
-  }
-}
 
 // Alternar el menú móvil
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
+
+// Cerrar el menú móvil al navegar
+function closeMenu() {
+  isMobileMenuOpen.value = false
+}
 </script>
 
 <template>
-  <div>
+  <div class="app-wrapper">
     <!-- Skip Link: Primer elemento enfocable de toda la página -->
     <SkipLink target-id="main-content" />
 
     <!-- Contenedor principal de la aplicación -->
-    <div ref="appContainer">
+    <div class="app-container">
       
       <!-- Barra de navegación -->
       <header class="header">
         <nav class="navbar" aria-label="Navegación principal">
           <div class="navbar-brand">
-            <a href="#" class="logo">AccessibleVue</a>
+            <router-link to="/" class="logo">AccessibleVue</router-link>
           </div>
           
           <!-- Botón hamburguesa para móvil -->
@@ -76,83 +59,18 @@ function toggleMobileMenu() {
             class="navbar-menu"
             :class="{ 'navbar-menu-open': isMobileMenuOpen }"
           >
-            <li><a href="#" @click="isMobileMenuOpen = false">Inicio</a></li>
-            <li><a href="#" @click="isMobileMenuOpen = false">Componentes</a></li>
-            <li><a href="#dynamic-workflows" @click="isMobileMenuOpen = false">Flujos Accesibles</a></li>
-            <li><a href="#" @click="isMobileMenuOpen = false">Documentación</a></li>
-            <li><a href="#" @click="isMobileMenuOpen = false">Ejemplos</a></li>
-            <li><a href="#" @click="isMobileMenuOpen = false">Contacto</a></li>
+            <li>
+              <router-link to="/" @click="closeMenu">Inicio</router-link>
+            </li>
+            <li>
+              <router-link to="/flujos-accesibles" @click="closeMenu">Flujos Accesibles</router-link>
+            </li>
           </ul>
         </nav>
       </header>
 
-      <!-- Contenido principal con id para el skip link -->
-      <main id="main-content" ref="mainContent" tabindex="-1" class="main-content">
-        
-        <!-- Título principal de la página -->
-        <div class="page-header">
-          <h1>Componentes Interactivos Accesibles en Vue.js</h1>
-          <p class="page-subtitle">Demo educativa de mejores prácticas de accesibilidad web</p>
-        </div>
-        
-        <!-- Componente 1: Acordeones -->
-        <AccordionAccessible />
-
-        <!-- Componente 2: Tooltip -->
-        <TooltipAccessible />
-
-        <!-- Componente 3: Paginación -->
-        <PaginationAccessible />
-
-        <!-- Componente 4: Modal con Focus Trap -->
-        <ModalAccessible 
-          @modal-opened="handleModalOpened"
-          @modal-closed="handleModalClosed"
-        />
-
-        <!-- Componente 5: Gestión de Foco -->
-        <FocusManagement />
-
-        <!-- Componente 6: Mapa -->
-        <MapAccessible />
-
-        <!-- Componente 7: Componentes Dinámicos y Flujos -->
-        <div id="dynamic-workflows">
-          <DynamicWorkflows />
-        </div>
-
-        <!-- Nota educativa final -->
-        <section class="section section-note">
-          <h2>Notas Importantes sobre Accesibilidad</h2>
-          <ul class="notes-list">
-            <li>
-              <strong>Prueba con teclado:</strong> Navega usando solo Tab, Enter, Space y Escape.
-              Todos los componentes deben ser completamente operables.
-            </li>
-            <li>
-              <strong>Prueba con lectores de pantalla:</strong> Usa NVDA (Windows), JAWS (Windows),
-              o VoiceOver (Mac) para verificar que toda la información se anuncia correctamente.
-            </li>
-            <li>
-              <strong>Contraste de colores:</strong> Asegúrate de que el contraste entre texto y
-              fondo cumpla con las pautas WCAG (mínimo 4.5:1 para texto normal).
-            </li>
-            <li>
-              <strong>Orden del foco:</strong> El orden de tabulación debe seguir un flujo lógico
-              y predecible, siguiendo el orden natural del DOM.
-            </li>
-            <li>
-              <strong>Estados visuales:</strong> Todos los elementos interactivos deben tener
-              indicadores visuales claros para :focus, :hover, y :active.
-            </li>
-            <li>
-              <strong>Componentes reutilizables:</strong> Cada componente de esta demo está aislado
-              en su propio archivo y puede ser reutilizado en otros proyectos.
-            </li>
-          </ul>
-        </section>
-
-      </main>
+      <!-- Vista dinámica basada en la ruta -->
+      <router-view class="content-wrapper" />
 
       <!-- Pie de página -->
       <footer class="footer">
@@ -176,11 +94,37 @@ function toggleMobileMenu() {
   padding: 0;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.6;
   color: #1a1a1a;
   background-color: #f0f0f0;
+}
+
+/* ============================================ */
+/* LAYOUT PRINCIPAL CON FOOTER PEGADO AL FONDO */
+/* ============================================ */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding-top: 0;
 }
 
 /* ============================================ */
@@ -193,6 +137,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
 }
 
 .navbar {
@@ -256,6 +201,12 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Estilo para el enlace activo del router */
+.navbar-menu a.router-link-active {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+}
+
 /* Botón hamburguesa - oculto por defecto en desktop */
 .navbar-toggle {
   display: none;
@@ -287,97 +238,12 @@ body {
   transition: all 0.3s ease;
 }
 
-.main-content {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-/* Quitamos el outline del main cuando recibe foco programático */
-.main-content:focus {
-  outline: none;
-}
-
-.page-header {
-  text-align: center;
-  padding: 3rem 2rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, #3d4db8 0%, #5a3278 100%);
-  color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.page-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.page-subtitle {
-  font-size: 1.2rem;
-  opacity: 0.95;
-  margin: 0;
-}
-
 .footer {
   background: #1a1a1a;
   color: white;
   text-align: center;
   padding: 2rem;
-  margin-top: 4rem;
-}
-
-/* ============================================ */
-/* SECCIONES */
-/* ============================================ */
-.section {
-  background: white;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.section h2 {
-  color: #3d4db8;
-  margin-bottom: 1rem;
-  font-size: 1.8rem;
-  border-bottom: 3px solid #3d4db8;
-  padding-bottom: 0.5rem;
-}
-
-.section-note {
-  background: #fff8dc;
-  border-left: 5px solid #d39e00;
-}
-
-.notes-list {
-  list-style: none;
-  padding: 0;
-}
-
-.notes-list li {
-  padding: 0.75rem 0;
-  padding-left: 1.5rem;
-  position: relative;
-}
-
-.notes-list li::before {
-  content: "→";
-  position: absolute;
-  left: 0;
-  color: #d39e00;
-  font-weight: bold;
-}
-
-.notes-list code {
-  background: #fff;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
+  margin-top: auto;
 }
 
 /* ============================================ */
@@ -467,30 +333,6 @@ textarea:focus {
     padding: 1rem;
     text-align: center;
   }
-  
-  .page-header {
-    padding: 2rem 1rem;
-  }
-  
-  .page-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .page-subtitle {
-    font-size: 1rem;
-  }
-  
-  .main-content {
-    padding: 1rem;
-  }
-  
-  .section {
-    padding: 1.5rem;
-  }
-  
-  .section h2 {
-    font-size: 1.5rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -504,18 +346,6 @@ textarea:focus {
   
   .navbar-menu {
     gap: 0.25rem;
-  }
-  
-  .page-header {
-    padding: 1.5rem 1rem;
-  }
-  
-  .page-header h1 {
-    font-size: 1.5rem;
-  }
-  
-  .page-subtitle {
-    font-size: 0.9rem;
   }
 }
 </style>
