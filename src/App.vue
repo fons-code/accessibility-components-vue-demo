@@ -95,7 +95,6 @@ function closeMenu() {
 }
 
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -134,9 +133,6 @@ body {
   background: #4a5fd5;
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  position: sticky;
-  top: 0;
-  z-index: 100;
   width: 100%;
 }
 

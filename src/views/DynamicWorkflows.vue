@@ -146,7 +146,6 @@ watch(productosFiltrados, (nuevosResultados) => {
 .view-container {
   width: 100%;
   min-height: 100%;
-  margin-top: 600px;
 }
 
 .main-content {
